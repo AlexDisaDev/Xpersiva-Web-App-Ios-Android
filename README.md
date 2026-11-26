@@ -4,6 +4,14 @@ App nativa en **Kotlin + Jetpack Compose**, Android 8+ (minSdk 26). Lee las
 experiencias de la web (`https://xpersiva.netlify.app/experiences.json`, rama
 `web/v1`), así que crear una experiencia no requiere versión nueva.
 
+`startsAt`/`endsAt` son la campaña (puede durar meses); `dailyOpensAt`/
+`dailyClosesAt` son el horario del día dentro de ella, opcionales. Sin
+horario diario, `estaEnMarcha()` (`experiencias/Experiencia.kt`) marcaría "en
+directo" las 24 horas mientras dure la campaña, así que el filtro "En
+directo" del inicio no filtraría nada: con horario diario, solo lo hace
+dentro de él, y además se enseña como dato ("10:00 – 20:00") en la tarjeta y
+en la ficha.
+
 ## Abrir y compilar
 
 Abrir la carpeta del repo (esta rama) en Android Studio y darle a Run. O por terminal:
