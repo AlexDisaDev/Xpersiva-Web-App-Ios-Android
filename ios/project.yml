@@ -28,7 +28,12 @@ targets:
       path: Xpersiva/Info.plist
       properties:
         CFBundleDisplayName: Xpersiva
-        UILaunchScreen: {}
+        # Fondo de arranque azul noche, el color del primer fotograma de
+        # Recursos/startup-intro.mp4: así no hay salto entre el sistema y el vídeo.
+        UILaunchScreen:
+          UIColorName: FondoArranque
+        # La marca va sobre superficies claras (el logo de cabecera es oscuro).
+        UIUserInterfaceStyle: Light
         # Portrait en toda la app; el mando por giroscopio pide horizontal solo en su
         # pantalla (ver OrientacionApp.swift), pero necesita que el sistema lo tenga
         # declarado aquí o no gira aunque el delegate lo permita.
