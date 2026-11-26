@@ -85,7 +85,7 @@ fun PantallaMando(enlace: EnlaceUnion, nombre: String, alSalir: () -> Unit) {
         Row(Modifier.fillMaxSize().systemBarsPadding().padding(16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Pedal("FRENO", Modifier.weight(0.3f)) { conexion.freno = it }
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                cabecera(mostrarSalir = true)
+                cabecera(true)
                 IndicadorGiroscopio(Modifier.weight(1f), giroVisual)
             }
             Pedal("GAS", Modifier.weight(0.3f)) { conexion.acelerador = it }
@@ -94,7 +94,7 @@ fun PantallaMando(enlace: EnlaceUnion, nombre: String, alSalir: () -> Unit) {
     }
 
     Column(Modifier.fillMaxSize().systemBarsPadding().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        cabecera(mostrarSalir = false)
+        cabecera(false)
         when (enlace.control) {
             TipoControl.VOLANTE -> {
                 Volante(Modifier.weight(1f)) { conexion.volante = it }
