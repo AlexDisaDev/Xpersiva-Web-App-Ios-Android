@@ -66,17 +66,21 @@ elegir entre las que ya existen) sí sigue necesitando código nuevo en
 
 ## Marca
 
-Colores en `Nucleo/Marca.swift` (acento morado, verde de "conectado", rojo de
-error), iguales a los de `Colores.kt` en `android/v1`. El tint global de la
-app (`.tint(.acento)` en `XpersivaApp.swift`) y `AccentColor` en
-`Assets.xcassets` usan el mismo morado `#6D4AFF`.
+Sale de la rama `brand` (`brand/app-ready/`, los definitivos; `brand/v2-portal/`
+solo se usó como referencia visual):
 
-El icono (`Assets.xcassets/AppIcon`) sale del isotipo que ya tenía la primera
-versión Expo del proyecto (`assets/icon.png`), recortado y puesto sobre el
-morado de marca en vez del fondo con las guías de diseño que traía ese PNG.
-Los otros assets de esa carpeta (`splash-icon.png`, `android-icon-background.png`)
-tienen esas mismas guías de cuadrícula incrustadas en el propio PNG, no
-sirven como están: si quieres usarlos, pide un reexport limpio.
+- Colores en `Nucleo/Marca.swift`: violeta `#6D4AFF`, cian `#42E3F2`, azul noche
+  `#090B1E` y superficies claras (la app va siempre en modo claro,
+  `UIUserInterfaceStyle: Light`). Los mismos que `ui/Tema.kt` en `android/v1`.
+  Ahí está también `BotonPrincipal`, el botón violeta de "ESCANEAR QR".
+- Icono: `Assets.xcassets/AppIcon` (`icon.png` de la marca, 1024 px, sin transparencia).
+- Arranque: la pantalla de arranque del sistema es el color `FondoArranque`
+  (azul noche), igual que el primer fotograma de `Recursos/startup-intro.mp4`.
+  `App/IntroApertura.swift` reproduce ese vídeo una vez por arranque (sin sonido
+  y sin cortar la música, tocar lo salta) y luego enseña la app. Con "Reducir
+  movimiento" sale solo el símbolo (`SimboloArranque`) un momento. Un enlace del
+  QR que abre la app espera a que acabe la intro y aterriza en su pantalla como siempre.
+- Logo de cabecera: `LogoCabecera` (recorte de `logo-header.png`, para fondo claro).
 
 ## Antes de publicar
 
