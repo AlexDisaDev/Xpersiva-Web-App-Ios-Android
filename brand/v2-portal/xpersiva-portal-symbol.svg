@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Xpersiva Portal">
+<defs><linearGradient id="xp" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#A993FF"/><stop offset=".55" stop-color="#6D4AFF"/><stop offset="1" stop-color="#42E3F2"/></linearGradient></defs>
+<circle cx="256" cy="256" r="161" fill="none" stroke="#534996" stroke-width="5"/>
+<g fill="none" stroke-width="10" stroke-linecap="round"><path stroke="#42E3F2" d="M406 196a161 161 0 0 1-16 116"/><path stroke="#6D4AFF" d="M316 406a161 161 0 0 1-116-16"/><path stroke="#42E3F2" d="M106 316a161 161 0 0 1 16-116"/><path stroke="#6D4AFF" d="M196 106a161 161 0 0 1 116 16"/></g>
+<g transform="translate(56 56) scale(.78)"><path fill="#A993FF" d="M90 90h80l86 120-46 46L90 170z"/><path fill="#6D4AFF" d="M342 90h80v80L302 256l-46-46zM90 342l120-86 46 46-86 120H90z"/><path fill="#42E3F2" d="M302 256l120 86v80h-80l-86-120z"/></g>
+</svg>
