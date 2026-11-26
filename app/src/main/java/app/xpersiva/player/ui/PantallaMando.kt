@@ -69,7 +69,7 @@ fun PantallaMando(enlace: EnlaceUnion, nombre: String, alSalir: () -> Unit) {
 
     val cabecera: @Composable (mostrarSalir: Boolean) -> Unit = { mostrarSalir ->
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Box(Modifier.size(9.dp).background(if (estado == Estado.DENTRO) Colores.Ahora else Color(0xFFD1434A), CircleShape))
+            Box(Modifier.size(9.dp).background(if (estado == Estado.DENTRO) Colores.Ahora else Colores.Malo, CircleShape))
             Text("$nombre · ${textoEstado(estado)}", style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (mostrarSalir) {

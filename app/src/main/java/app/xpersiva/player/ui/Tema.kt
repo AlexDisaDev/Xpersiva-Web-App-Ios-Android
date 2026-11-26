@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.Color as ColorCompose
 object Colores {
     val Acento = ColorCompose(0xFF6D4AFF)
     val Ahora = ColorCompose(0xFF1F9D55)
+    val Malo = ColorCompose(0xFFD1434A)
 }
 
 @Composable

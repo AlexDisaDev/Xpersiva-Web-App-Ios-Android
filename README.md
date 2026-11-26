@@ -63,8 +63,21 @@ Añadir una plantilla de control genuinamente nueva (un cuarto caso, no solo
 elegir entre las que ya existen) sí sigue necesitando código nuevo en
 `PantallaMando.kt` y una nueva versión de la app.
 
+## Marca
+
+Colores en `ui/Tema.kt` (`Colores.Acento`, `.Ahora`, `.Malo`), iguales a los
+de `Nucleo/Marca.swift` en `ios/v1`.
+
+El icono (`res/mipmap-anydpi-v26/ic_launcher.xml`, adaptive icon) sale del
+isotipo que ya tenía la primera versión Expo del proyecto
+(`assets/android-icon-foreground.png`), que ya traía buen margen para la
+máscara adaptable; el fondo es el morado de marca en vez del fondo con las
+guías de diseño que traía `android-icon-background.png`. Ese PNG y
+`splash-icon.png` tienen esas guías de cuadrícula incrustadas en el propio
+archivo, no sirven como están: si quieres usarlos, pide un reexport limpio.
+
 ## Antes de publicar
 
 - Dominio definitivo en `nucleo/Config.kt` y `AndroidManifest.xml`.
 - Huella SHA-256 de la firma de Google Play en `web/.well-known/assetlinks.json` (rama `web/v1`).
-- Icono (ahora usa uno genérico del sistema) y capturas.
+- Icono ya aplicado (ver "Marca" arriba); capturas de pantalla pendientes.
