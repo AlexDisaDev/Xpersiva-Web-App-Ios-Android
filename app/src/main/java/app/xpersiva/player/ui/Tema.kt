@@ -17,6 +17,8 @@ object Colores {
     val AcentoSuave = ColorCompose(0xFFECE8FF)
     val Ahora = ColorCompose(0xFF1F9D55)
     val Malo = ColorCompose(0xFFD1434A)
+    val Freno = ColorCompose(0xFFFF6878)
+    val Gas = ColorCompose(0xFF39DEB4)
 }
 
 @Composable

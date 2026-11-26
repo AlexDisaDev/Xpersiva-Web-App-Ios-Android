@@ -39,6 +39,8 @@ fun PantallaMando(enlace: EnlaceUnion, nombre: String, alSalir: () -> Unit) {
     val estado by conexion.estado.collectAsStateWithLifecycle()
     val actividad = LocalContext.current as? Activity
     val esGiroscopio = enlace.control == TipoControl.GIROSCOPIO
+    val giro = remember(actividad) { actividad?.let(::VolanteGiroscopio) }
+    var invertido by remember { mutableStateOf(false) }
 
     DisposableEffect(conexion) {
         conexion.iniciar()
@@ -54,7 +56,6 @@ fun PantallaMando(enlace: EnlaceUnion, nombre: String, alSalir: () -> Unit) {
     var giroVisual by remember { mutableFloatStateOf(0f) }
     if (esGiroscopio) {
         DisposableEffect(actividad) {
-            val giro = actividad?.let(::VolanteGiroscopio)
             actividad?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
             giro?.iniciar {
                 conexion.volante = it
@@ -80,15 +81,30 @@ fun PantallaMando(enlace: EnlaceUnion, nombre: String, alSalir: () -> Unit) {
     }
 
     if (esGiroscopio) {
-        // El giro ya controla el volante: aquí solo hace falta el indicador
-        // y gas/freno, uno a cada lado para no taparse con los pulgares.
-        Row(Modifier.fillMaxSize().systemBarsPadding().padding(16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Pedal("FRENO", Modifier.weight(0.3f)) { conexion.freno = it }
+        Row(
+            Modifier.fillMaxSize().background(Colores.Noche).systemBarsPadding().padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Pedal("FRENO", Modifier.weight(0.3f), Colores.Freno) { conexion.freno = it }
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                cabecera(true)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("XPERSIVA / F1", color = Colores.Cian, fontWeight = FontWeight.ExtraBold)
+                    Spacer(Modifier.weight(1f))
+                    TextButton(onClick = alSalir) { Text("Salir", color = Color.White) }
+                }
+                Text("Tú llevas el control.", color = Color.White, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
+                cabecera(false)
                 IndicadorGiroscopio(Modifier.weight(1f), giroVisual)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton(onClick = { giro?.calibrar() }, modifier = Modifier.weight(1f)) {
+                        Text("◎  Calibrar giro", color = Color.White)
+                    }
+                    OutlinedButton(onClick = { invertido = !invertido; giro?.invertido = invertido }) {
+                        Text(if (invertido) "↔  Invertido" else "↔  Invertir", color = Color.White)
+                    }
+                }
             }
-            Pedal("GAS", Modifier.weight(0.3f)) { conexion.acelerador = it }
+            Pedal("ACELERAR", Modifier.weight(0.3f), Colores.Gas) { conexion.acelerador = it }
         }
         return
     }
@@ -162,29 +178,38 @@ private fun Volante(modifier: Modifier, alCambiar: (Float) -> Unit) {
 private fun IndicadorGiroscopio(modifier: Modifier, valor: Float) {
     BoxWithConstraints(
         modifier.fillMaxWidth()
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
+            .background(Color(0xFF111630), RoundedCornerShape(24.dp))
+            .border(1.dp, Color(0xFF353B5D), RoundedCornerShape(24.dp)),
         contentAlignment = Alignment.Center,
     ) {
-        Text("inclina el móvil para girar", color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Box(
-            Modifier.align(Alignment.CenterStart)
-                .offset(x = maxWidth * ((valor + 1f) / 2f) - 2.dp)
-                .width(4.dp).fillMaxHeight().padding(vertical = 10.dp)
-                .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp)),
-        )
+        Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("✦", color = Colores.Cian, style = MaterialTheme.typography.headlineLarge)
+            Text("DIRECCIÓN", color = Color.White, fontWeight = FontWeight.ExtraBold)
+            Text("Gira el móvil como un volante", color = Color(0xFFAEB2CD), style = MaterialTheme.typography.bodySmall)
+            Spacer(Modifier.height(18.dp))
+            BoxWithConstraints(Modifier.fillMaxWidth().height(26.dp), contentAlignment = Alignment.CenterStart) {
+                Box(Modifier.fillMaxWidth().height(7.dp).background(Color(0xFF303657), RoundedCornerShape(4.dp)))
+                Box(Modifier.align(Alignment.Center).width(2.dp).height(18.dp).background(Color(0xFF7980A5)))
+                Box(Modifier.offset(x = maxWidth * ((valor + 1f) / 2f) - 12.dp).size(24.dp).background(Colores.Cian, CircleShape))
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text("IZQUIERDA", color = Color(0xFF8B92B1), style = MaterialTheme.typography.labelSmall)
+                Text("DERECHA", color = Color(0xFF8B92B1), style = MaterialTheme.typography.labelSmall)
+            }
+        }
     }
 }
 
 @Composable
-private fun Pedal(titulo: String, modifier: Modifier, alCambiar: (Boolean) -> Unit) {
+private fun Pedal(titulo: String, modifier: Modifier, acento: Color? = null, alCambiar: (Boolean) -> Unit) {
     var pulsado by remember { mutableStateOf(false) }
     val vista = LocalView.current
     Box(
         modifier.fillMaxHeight()
-            .background(
-                if (pulsado) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
-                RoundedCornerShape(16.dp),
-            )
+            .background(if (acento != null) acento.copy(alpha = if (pulsado) 0.52f else 0.22f)
+                else if (pulsado) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                RoundedCornerShape(if (acento != null) 24.dp else 16.dp))
+            .then(if (acento != null) Modifier.border(1.dp, acento, RoundedCornerShape(24.dp)) else Modifier)
             .pointerInput(Unit) {
                 awaitEachGesture {
                     val dedo = awaitFirstDown(requireUnconsumed = false)
@@ -201,6 +226,6 @@ private fun Pedal(titulo: String, modifier: Modifier, alCambiar: (Boolean) -> Un
             },
         contentAlignment = Alignment.Center,
     ) {
-        Text(titulo, fontWeight = FontWeight.Bold, color = if (pulsado) Color.White else MaterialTheme.colorScheme.onSurface)
+        Text(titulo, fontWeight = FontWeight.ExtraBold, color = acento ?: if (pulsado) Color.White else MaterialTheme.colorScheme.onSurface)
     }
 }

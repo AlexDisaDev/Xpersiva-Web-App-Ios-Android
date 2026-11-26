@@ -21,6 +21,11 @@ class VolanteGiroscopio(private val actividad: Activity) {
     private val sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY)
         ?: sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
     private var listener: SensorEventListener? = null
+    private var ultimoAngulo = 0f
+    private var centro = 0f
+    var invertido = false
+
+    fun calibrar() { centro = ultimoAngulo }
 
     fun iniciar(alCambiar: (Float) -> Unit) {
         val sensorActual = sensor ?: return
@@ -44,8 +49,11 @@ class VolanteGiroscopio(private val actividad: Activity) {
                 // +x (ROTATION_90) o -x (ROTATION_270), y el ángulo sale positivo al
                 // girar a la derecha.
                 val angulo = if (rotacionPantalla == Surface.ROTATION_270) atan2(-y, -x) else atan2(y, x)
+                ultimoAngulo = angulo
                 // ±45º = tope del volante.
-                alCambiar((angulo / (Math.PI.toFloat() / 4f)).coerceIn(-1f, 1f))
+                val diferencia = atan2(kotlin.math.sin(angulo - centro), kotlin.math.cos(angulo - centro))
+                val direccion = if (invertido) -1f else 1f
+                alCambiar((diferencia / (Math.PI.toFloat() / 4f) * direccion).coerceIn(-1f, 1f))
             }
 
             override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) = Unit
