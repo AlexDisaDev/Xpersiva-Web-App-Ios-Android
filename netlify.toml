@@ -1,3 +1,8 @@
 # Netlify publica solo la web; la app se compila con EAS.
 [build]
   publish = "web"
+  # No hay paso de build: la web es estática.
+  command = ""
+  # Solo despliega si cambió algo dentro de web/. Si el push solo toca la app
+  # o la documentación, Netlify cancela el deploy y no gasta nada.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- web/ netlify.toml"
