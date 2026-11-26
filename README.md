@@ -51,9 +51,10 @@ pedir una actualización ni pasar revisión otra vez. Para generar el QR con
 parámetro a la "Public URL" que se usa al crear el código QR del plugin
 `websocket`.
 
-**`c=giroscopio`:** `juego/VolanteGiroscopio.kt` usa el sensor
-`TYPE_ROTATION_VECTOR` y toma la postura del teléfono al entrar como
-"centro", así da igual cómo lo sujete cada uno. `PantallaMando.kt` pone
+**`c=giroscopio`:** `juego/VolanteGiroscopio.kt` usa el sensor de gravedad
+(o el acelerómetro si no hay) y mira hacia dónde cae la gravedad dentro del
+plano de la pantalla: se gira el móvil en horizontal como un volante, e
+inclinarlo hacia delante o atrás no mueve el coche. `PantallaMando.kt` pone
 `requestedOrientation = SCREEN_ORIENTATION_SENSOR_LANDSCAPE` solo mientras
 esa pantalla está abierta (la actividad declara `configChanges` para no
 recrearse al girar) y deja gas/freno como dos botones táctiles, uno a cada

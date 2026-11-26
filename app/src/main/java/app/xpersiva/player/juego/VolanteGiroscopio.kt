@@ -7,50 +7,45 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.view.Surface
-import kotlin.math.max
-import kotlin.math.min
+import kotlin.math.atan2
 
 /**
  * Convierte el giro del teléfono en un valor de volante -1...1.
  *
- * Igual que en iOS: se guarda la postura del teléfono al empezar como
- * "centro" en vez de un ángulo absoluto fijo, así da igual cómo sujete cada
- * uno el móvil. Los ejes del sensor se remapean según en qué lado esté el
- * teléfono en horizontal, porque `SCREEN_ORIENTATION_SENSOR_LANDSCAPE`
- * permite cualquiera de los dos giros.
+ * Se sujeta en horizontal y se gira como un volante: lo que cuenta es hacia
+ * dónde cae la gravedad dentro del plano de la pantalla. Inclinarlo hacia
+ * delante o hacia atrás no cambia ese ángulo, así que no gira el coche.
  */
 class VolanteGiroscopio(private val actividad: Activity) {
     private val sensorManager = actividad.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    private val sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
-    private var referencia: Float? = null
+    private val sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY)
+        ?: sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
     private var listener: SensorEventListener? = null
 
     fun iniciar(alCambiar: (Float) -> Unit) {
         val sensorActual = sensor ?: return
-        referencia = null
-        val matriz = FloatArray(9)
-        val remapada = FloatArray(9)
-        val orientacion = FloatArray(3)
+        var x = 0f
+        var y = 0f
+        var primera = true
         val l = object : SensorEventListener {
             override fun onSensorChanged(evento: SensorEvent) {
-                SensorManager.getRotationMatrixFromVector(matriz, evento.values)
+                // Suavizado ligero; con el acelerómetro de reserva hace falta, con el
+                // de gravedad casi no se nota.
+                if (primera) {
+                    x = evento.values[0]; y = evento.values[1]; primera = false
+                } else {
+                    x += (evento.values[0] - x) * 0.3f
+                    y += (evento.values[1] - y) * 0.3f
+                }
                 @Suppress("DEPRECATION")
                 val rotacionPantalla = actividad.windowManager.defaultDisplay.rotation
-                val (ejeX, ejeY) = if (rotacionPantalla == Surface.ROTATION_270) {
-                    SensorManager.AXIS_MINUS_Y to SensorManager.AXIS_X
-                } else {
-                    // ROTATION_90, el giro habitual, y por defecto.
-                    SensorManager.AXIS_Y to SensorManager.AXIS_MINUS_X
-                }
-                SensorManager.remapCoordinateSystem(matriz, ejeX, ejeY, remapada)
-                SensorManager.getOrientation(remapada, orientacion)
-                val giro = orientacion[2]
-                if (referencia == null) referencia = giro
-                var relativo = giro - referencia!!
-                while (relativo > Math.PI) relativo -= (2 * Math.PI).toFloat()
-                while (relativo < -Math.PI) relativo += (2 * Math.PI).toFloat()
-                // ±45º de giro desde la postura inicial = tope del volante.
-                alCambiar(min(1f, max(-1f, relativo / (Math.PI.toFloat() / 4f))))
+                // El sensor da "hacia arriba" en ejes del teléfono (x a la derecha e y
+                // hacia arriba en vertical). En horizontal, el arriba de la pantalla es
+                // +x (ROTATION_90) o -x (ROTATION_270), y el ángulo sale positivo al
+                // girar a la derecha.
+                val angulo = if (rotacionPantalla == Surface.ROTATION_270) atan2(-y, -x) else atan2(y, x)
+                // ±45º = tope del volante.
+                alCambiar((angulo / (Math.PI.toFloat() / 4f)).coerceIn(-1f, 1f))
             }
 
             override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) = Unit
@@ -62,6 +57,5 @@ class VolanteGiroscopio(private val actividad: Activity) {
     fun detener() {
         listener?.let { sensorManager.unregisterListener(it) }
         listener = null
-        referencia = null
     }
 }
