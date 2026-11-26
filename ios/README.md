@@ -53,9 +53,10 @@ pedir una actualización ni pasar revisión otra vez. Para generar el QR con
 parámetro a la "Public URL" que se usa al crear el código QR del plugin
 `websocket`.
 
-**`c=giroscopio`:** `VolanteGiroscopio.swift` usa CoreMotion (`CMDeviceMotion`)
-y toma la postura del teléfono al entrar como "centro", así da igual cómo lo
-sujete cada uno. Esta pantalla gira a horizontal solo mientras está activa
+**`c=giroscopio`:** `VolanteGiroscopio.swift` usa la gravedad de CoreMotion
+(`CMDeviceMotion.gravity`) dentro del plano de la pantalla: se gira el móvil
+en horizontal como un volante, e inclinarlo hacia delante o atrás no mueve el
+coche. Esta pantalla gira a horizontal solo mientras está activa
 (`OrientacionApp.swift` + `requestGeometryUpdate`); el resto de la app sigue
 en vertical. Gas y freno quedan como dos botones táctiles, uno a cada lado.
 
