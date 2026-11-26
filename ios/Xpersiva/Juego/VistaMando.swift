@@ -5,9 +5,11 @@ import SwiftUI
 struct VistaMando: View {
     @State private var conexion: ConexionJuego
     private let nombre: String
+    private let control: TipoControl
 
     init(enlace: EnlaceUnion) {
         nombre = Perfil.nombre
+        control = enlace.control
         _conexion = State(initialValue: ConexionJuego(enlace: enlace, nombre: Perfil.nombre))
     }
 
@@ -18,12 +20,18 @@ struct VistaMando: View {
                 Text("\(nombre) · \(textoEstado)").font(.footnote).foregroundStyle(.secondary)
                 Spacer()
             }
-            Volante(valor: $conexion.volante)
-            HStack(spacing: 12) {
-                Pedal(titulo: "FRENO", pulsado: $conexion.freno)
-                Pedal(titulo: "GAS", pulsado: $conexion.acelerador)
+            switch control {
+            case .volante:
+                Volante(valor: $conexion.volante)
+                HStack(spacing: 12) {
+                    Pedal(titulo: "FRENO", pulsado: $conexion.freno)
+                    Pedal(titulo: "GAS", pulsado: $conexion.acelerador)
+                }
+                .frame(height: 260)
+            case .boton:
+                BotonUnico(pulsado: $conexion.acelerador)
+                    .frame(maxHeight: .infinity)
             }
-            .frame(height: 260)
         }
         .padding()
         .navigationBarTitleDisplayMode(.inline)
@@ -68,6 +76,29 @@ private struct Volante: View {
                     .onEnded { _ in valor = 0 }
             )
         }
+    }
+}
+
+/// Experiencias que solo necesitan "pulsa para jugar": reusa `acelerador`
+/// (el `throttle` del protocolo) como señal de pulsado/soltado.
+private struct BotonUnico: View {
+    @Binding var pulsado: Bool
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 24)
+            .fill(pulsado ? AnyShapeStyle(.tint) : AnyShapeStyle(.quaternary))
+            .overlay(Text("PULSA").font(.largeTitle.bold()).foregroundStyle(pulsado ? .white : .primary))
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in
+                        if !pulsado {
+                            pulsado = true
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        }
+                    }
+                    .onEnded { _ in pulsado = false }
+            )
     }
 }
 

@@ -1,11 +1,30 @@
 import Foundation
 
+/// Qué pantalla de control mostrar para una experiencia.
+///
+/// Lo decide el propio QR (parámetro `c`), no la versión de la app: así cada
+/// evento elige entre las plantillas YA incluidas en la app sin pedir una
+/// actualización. Añadir una plantilla nueva (un tercer caso aquí) sí sigue
+/// necesitando código nuevo y pasar por revisión; elegir entre las que ya
+/// existen, no.
+enum TipoControl: String, Hashable, Sendable {
+    /// Volante + pedales (el mando completo de conducción).
+    case volante
+    /// Un único botón grande (p. ej. una experiencia de "pulsa para jugar").
+    case boton
+
+    /// `nil` o un valor que no reconocemos cae en `.volante` por compatibilidad.
+    init(parametro: String?) {
+        self = TipoControl(rawValue: parametro?.lowercased() ?? "") ?? .volante
+    }
+}
+
 /// A qué experiencia hay que unirse, sacado de un QR o de un enlace.
 ///
 /// Formatos aceptados:
-///   https://<web>/j/F1?h=192.168.0.17:8080   (QR recomendado)
-///   xpersiva://j/F1?h=192.168.0.17:8080      (esquema propio)
-///   http://192.168.0.17:8080                 (QR actual del plugin, solo red local)
+///   https://<web>/j/F1?h=192.168.0.17:8080&c=boton   (QR recomendado; c es opcional)
+///   xpersiva://j/F1?h=192.168.0.17:8080              (esquema propio)
+///   http://192.168.0.17:8080                         (QR actual del plugin, solo red local)
 struct EnlaceUnion: Hashable, Sendable {
     /// Código de la experiencia. "LAN" si el QR no traía ninguno.
     let codigo: String
@@ -13,10 +32,12 @@ struct EnlaceUnion: Hashable, Sendable {
     let host: String
     /// true para wss:// (juego detrás de un túnel con TLS).
     let seguro: Bool
+    /// Qué pantalla de control mostrar en esta experiencia.
+    let control: TipoControl
 
     var urlSocket: URL? { URL(string: "\(seguro ? "wss" : "ws")://\(host)") }
 
-    init?(codigo: String, host: String?, seguro: Bool = false) {
+    init?(codigo: String, host: String?, seguro: Bool = false, control: TipoControl = .volante) {
         guard let host,
               host.range(of: #"^[A-Za-z0-9.-]+(:\d{1,5})?$"#, options: .regularExpression) != nil,
               codigo.range(of: #"^[A-Za-z0-9][A-Za-z0-9-]{1,31}$"#, options: .regularExpression) != nil
@@ -24,6 +45,7 @@ struct EnlaceUnion: Hashable, Sendable {
         self.codigo = codigo.uppercased()
         self.host = host
         self.seguro = seguro
+        self.control = control
     }
 
     init?(texto: String) {
@@ -44,7 +66,12 @@ struct EnlaceUnion: Hashable, Sendable {
             let trozos = ([esquema == Config.esquema ? partes.host ?? "" : ""] + partes.path.split(separator: "/").map(String.init))
                 .filter { !$0.isEmpty }
             guard trozos.count >= 2, trozos[0] == "j" else { return nil }
-            self.init(codigo: trozos[1], host: consulta["h"], seguro: consulta["s"] == "1")
+            self.init(
+                codigo: trozos[1],
+                host: consulta["h"],
+                seguro: consulta["s"] == "1",
+                control: TipoControl(parametro: consulta["c"])
+            )
             return
         }
 
