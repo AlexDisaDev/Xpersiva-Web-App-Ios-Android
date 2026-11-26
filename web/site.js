@@ -14,9 +14,22 @@ window.XPERSIVA = {
     return (body.experiences || []).filter((e) => !e.endsAt || Date.parse(e.endsAt) >= now);
   },
 
+  // En marcha: dentro de startsAt/endsAt (la campaña, puede durar meses) y, si
+  // tiene horario diario, dentro de él. Sin dailyOpensAt/dailyClosesAt una
+  // experiencia con endsAt lejano saldría "AHORA" permanentemente las 24h.
   isLive(e) {
-    const now = Date.now();
-    return (!e.startsAt || Date.parse(e.startsAt) <= now) && (!e.endsAt || now <= Date.parse(e.endsAt));
+    const now = new Date();
+    if (e.startsAt && Date.parse(e.startsAt) > now.getTime()) return false;
+    if (e.endsAt && now.getTime() > Date.parse(e.endsAt)) return false;
+    if (e.dailyOpensAt && minutosDelDia(now) < minutosDeHora(e.dailyOpensAt)) return false;
+    if (e.dailyClosesAt && minutosDelDia(now) > minutosDeHora(e.dailyClosesAt)) return false;
+    return true;
+  },
+
+  // "10:00 – 20:00", o null si la experiencia no tiene horario diario.
+  horario(e) {
+    if (!e.dailyOpensAt && !e.dailyClosesAt) return null;
+    return [e.dailyOpensAt, e.dailyClosesAt].filter(Boolean).join(' – ');
   },
 
   // Botones de tienda: en el móvil, solo el de su sistema.
@@ -36,3 +49,9 @@ window.XPERSIVA = {
 
   text(el, value) { el.textContent = value == null ? '' : String(value); },
 };
+
+function minutosDelDia(fecha) { return fecha.getHours() * 60 + fecha.getMinutes(); }
+function minutosDeHora(hhmm) {
+  const [h, m] = hhmm.split(':').map(Number);
+  return h * 60 + (m || 0);
+}

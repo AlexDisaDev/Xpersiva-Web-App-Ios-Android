@@ -18,10 +18,19 @@ Añadir una entrada a `web/experiences.json` y hacer push a `web/v1`:
 { "id": "mi-evento-2027", "name": "Nombre", "brand": "Marca", "venue": "Recinto",
   "city": "Ciudad", "lat": 40.41, "lng": -3.70,
   "startsAt": "2027-03-01T10:00:00+01:00", "endsAt": "2027-03-03T20:00:00+01:00",
+  "dailyOpensAt": "10:00", "dailyClosesAt": "20:00",
   "description": "Texto corto", "tags": ["carreras"] }
 ```
 
 Aparece en las dos apps sin publicar versión nueva, y tiene su página en `/e/mi-evento-2027`.
+
+`startsAt`/`endsAt` son la campaña (pueden durar semanas o meses, como el demo de
+portfolio, que dura hasta 2027). `dailyOpensAt`/`dailyClosesAt` son opcionales:
+el horario del día ("10:00" a "20:00", hora local). Sin ellos, "AHORA"/"en
+directo" solo mira `startsAt`/`endsAt`, así que una campaña larga sale como "en
+directo" las 24 horas del día; con ellos, solo sale dentro de ese horario, que
+es lo que se ve y filtra en las apps y aquí en la web (`isLive`/`horario` en
+`web/site.js`).
 
 ## Ramas del proyecto
 

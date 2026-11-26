@@ -39,7 +39,7 @@ X.experiences().then((items) => {
     const left = document.createElement('span');
     const b = document.createElement('b'); X.text(b, e.name);
     const sub = document.createElement('span'); sub.className = 'dim';
-    X.text(sub, [e.brand, e.venue, e.city].filter(Boolean).join(' · '));
+    X.text(sub, [e.brand, e.venue, e.city, X.horario(e)].filter(Boolean).join(' · '));
     left.append(b, sub);
     const right = document.createElement('span');
     if (X.isLive(e)) { right.className = 'live'; X.text(right, 'AHORA'); }
