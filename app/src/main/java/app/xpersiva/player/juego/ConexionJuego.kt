@@ -28,6 +28,11 @@ import kotlin.math.roundToInt
  *   app → juego  {"type":"hello","name","code"}
  *   juego → app  {"type":"joined","id"}
  *   app → juego  {"type":"input","steer","throttle","brake"}  hasta 30 veces por segundo
+ *
+ * Reenviamos el último valor cada [INTERVALO_REENVIO_MS] aunque no cambie: el
+ * juego usa eso como señal de "sigo vivo" para soltar los ejes si el mando
+ * desaparece, y si no lo mandáramos nunca, mantener el volante quieto sería
+ * indistinguible de una desconexión.
  */
 class ConexionJuego(private val enlace: EnlaceUnion, private val nombre: String) {
     enum class Estado { CONECTANDO, CONECTADO, DENTRO, REINTENTANDO }
@@ -44,10 +49,10 @@ class ConexionJuego(private val enlace: EnlaceUnion, private val nombre: String)
     @Volatile private var socket: WebSocket? = null
     private var reintento: Job? = null
     private var ultimoEnviado = ""
+    private var ultimoEnvioMs = 0L
 
     fun iniciar() {
         conectar()
-        // Solo mandamos cuando algo cambió, igual que el mando web.
         ambito.launch {
             while (isActive) {
                 delay(33)
@@ -59,7 +64,12 @@ class ConexionJuego(private val enlace: EnlaceUnion, private val nombre: String)
                     .put("throttle", if (acelerador) 1 else 0)
                     .put("brake", if (freno) 1 else 0)
                     .toString()
-                if (carga != ultimoEnviado && s.send(carga)) ultimoEnviado = carga
+                val ahora = System.currentTimeMillis()
+                val tocaReenviar = ahora - ultimoEnvioMs >= INTERVALO_REENVIO_MS
+                if ((carga != ultimoEnviado || tocaReenviar) && s.send(carga)) {
+                    ultimoEnviado = carga
+                    ultimoEnvioMs = ahora
+                }
             }
         }
     }
@@ -106,5 +116,9 @@ class ConexionJuego(private val enlace: EnlaceUnion, private val nombre: String)
             delay(1500)
             conectar()
         }
+    }
+
+    companion object {
+        private const val INTERVALO_REENVIO_MS = 200L
     }
 }
