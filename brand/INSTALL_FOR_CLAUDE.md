@@ -1,5 +1,7 @@
 # Guía para colocar la marca en la app
 
+**Estado:** los archivos ya están instalados en `app/assets/` en la rama `brand`. `app/src/lib/StartupIntro.tsx` reproduce el vídeo y `app/src/app/_layout.tsx` lo muestra al arrancar iOS y Android. Esta guía conserva el mapa de archivos para mantenimiento.
+
 Usa **`brand/app-ready/`** como carpeta de entrega. Sus nombres ya coinciden con los destinos de Expo; no hace falta adivinar qué archivo es cada icono. La carpeta `brand/v2-portal/` conserva los originales de diseño y las versiones anteriores.
 
 ## Copias exactas

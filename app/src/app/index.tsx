@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Linking, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, Linking, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { type ExperienceWithDistance, formatKm, isLiveNow, matches, sortExperiences } from '../lib/experiences';
 import { colors } from '../lib/theme';
 import { Button, Dim, Screen, Spacer } from '../lib/ui';
@@ -18,8 +18,11 @@ export default function Home() {
 
   return (
     <Screen>
-      <Text style={styles.logo}>xpersiva</Text>
-      <Spacer h={12} />
+      <Image source={require('../../assets/logo-header.png')} style={styles.logo} resizeMode="contain" accessibilityLabel="Xpersiva" />
+      <Spacer h={16} />
+      <Text style={styles.eyebrow}>EXPERIENCIAS EN VIVO</Text>
+      <Text style={styles.heading}>Entra en la experiencia.</Text>
+      <Spacer h={18} />
       <TextInput
         value={query}
         onChangeText={setQuery}
@@ -97,7 +100,9 @@ function Row({ item }: { item: ExperienceWithDistance }) {
 }
 
 const styles = StyleSheet.create({
-  logo: { color: colors.accent, fontSize: 18, fontWeight: '800', letterSpacing: 2 },
+  logo: { width: 176, height: 52, alignSelf: 'flex-start' },
+  eyebrow: { color: colors.accent, fontSize: 11, fontWeight: '800', letterSpacing: 2 },
+  heading: { color: colors.text, fontSize: 28, fontWeight: '800', letterSpacing: -0.8, marginTop: 4 },
   search: {
     backgroundColor: colors.surface,
     borderRadius: 14,

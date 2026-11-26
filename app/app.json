@@ -7,7 +7,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "backgroundColor": "#FFFFFF",
+    "backgroundColor": "#090B1E",
     "ios": {
       "bundleIdentifier": "app.xpersiva.player",
       "supportsTablet": false,
@@ -24,7 +24,7 @@
     "android": {
       "package": "app.xpersiva.player",
       "adaptiveIcon": {
-        "backgroundColor": "#FFFFFF",
+        "backgroundColor": "#090B1E",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -57,6 +57,21 @@
       "expo-router",
       "expo-secure-store",
       [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#090B1E",
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 180,
+          "resizeMode": "contain"
+        }
+      ],
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "Xpersiva usa el movimiento del móvil para controlar la dirección durante el juego."
+        }
+      ],
+      [
         "expo-camera",
         {
           "cameraPermission": "Xpersiva usa la cámara solo para escanear el código QR de la experiencia.",
@@ -79,7 +94,8 @@
             "usesCleartextTraffic": true
           }
         }
-      ]
+      ],
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": false

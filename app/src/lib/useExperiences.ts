@@ -39,7 +39,7 @@ export function useExperiences() {
   }, [locate]);
 
   useEffect(() => {
-    reload();
+    void Promise.resolve().then(reload);
     // Si ya dio permiso otra vez, no volvemos a preguntar.
     Location.getForegroundPermissionsAsync().then((p) => {
       if (p.granted) locate();

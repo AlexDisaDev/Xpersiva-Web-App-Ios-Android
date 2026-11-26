@@ -1,6 +1,6 @@
 # Propuesta visual: mando F1 con giroscopio
 
-Diseño de pantalla, **sin implementación en la app**. La opción recomendada es horizontal: se sostiene el móvil con ambas manos, se inclina para girar y se pulsan los pedales con los pulgares. La versión vertical muestra cómo se adapta la misma jerarquía a la orientación actual de la app.
+Diseño de pantalla. La app implementa una adaptación vertical en `app/src/app/play.tsx` para su orientación actual: el móvil se gira como volante y los pedales se pulsan con los pulgares. El mockup horizontal queda como referencia para una futura orientación horizontal.
 
 ## Archivos
 
@@ -10,13 +10,13 @@ Diseño de pantalla, **sin implementación en la app**. La opción recomendada e
 
 ## Intención de interacción
 
-- **Giro:** el móvil funciona como volante. El círculo central comunica la inclinación y el estado neutral; no es una zona táctil de dirección.
+- **Giro:** el móvil funciona como volante. La pantalla vertical también permite deslizar la zona central si no se activa el sensor.
 - **Freno:** gran zona izquierda, roja y rotulada. Actúa solo mientras se mantiene pulsada.
 - **Acelerar:** gran zona derecha, verde y rotulada. Actúa solo mientras se mantiene pulsada.
 - **Centrar volante:** recalibra la posición neutral antes de jugar o cuando el usuario cambia la postura.
 - **Conexión y salida:** visibles pero fuera de las zonas principales de control.
 
-El protocolo actual de la app solo envía `steer`, `throttle` y `brake`; por eso el diseño no inventa velocidad, marcha ni tiempos de vuelta. La implementación del giroscopio requeriría cambiar la forma de calcular `steer` en `app/src/app/play.tsx`. Esta carpeta no modifica esa pantalla ni el protocolo.
+El protocolo de la app solo envía `steer`, `throttle` y `brake`; por eso la pantalla no inventa velocidad, marcha ni tiempos de vuelta. La implementación usa `expo-sensors` y conserva ese protocolo.
 
 ## Colores
 
