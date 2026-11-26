@@ -1,0 +1,17 @@
+{
+  "experiences": [
+    {
+      "id": "f1-racing-demo",
+      "name": "F1 Racing",
+      "brand": "Xpersiva",
+      "venue": "Demo de portfolio",
+      "city": "Madrid",
+      "lat": 40.4168,
+      "lng": -3.7038,
+      "startsAt": "2026-12-01T10:00:00+01:00",
+      "endsAt": "2027-12-31T20:00:00+01:00",
+      "description": "Carreras de F1 en pantalla gigante. Tu móvil es el volante: escanea el QR, pon tu nombre y a correr.",
+      "tags": ["carreras", "coches", "multijugador"]
+    }
+  ]
+}

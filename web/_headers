@@ -1,0 +1,5 @@
+/.well-known/apple-app-site-association
+  Content-Type: application/json
+/experiences.json
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=60
