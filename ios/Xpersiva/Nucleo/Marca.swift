@@ -13,6 +13,8 @@ extension Color {
     static let acentoSuave = Color(hex: 0xECE8FF)
     static let ahora = Color(hex: 0x1F9D55)
     static let malo = Color(hex: 0xD1434A)
+    static let freno = Color(hex: 0xFF6878)
+    static let gas = Color(hex: 0x39DEB4)
 
     init(hex: UInt32) {
         self.init(red: Double((hex >> 16) & 0xFF) / 255,

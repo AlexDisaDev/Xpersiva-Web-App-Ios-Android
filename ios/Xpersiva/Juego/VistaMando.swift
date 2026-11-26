@@ -5,6 +5,7 @@ import SwiftUI
 struct VistaMando: View {
     @State private var conexion: ConexionJuego
     @State private var giro = VolanteGiroscopio()
+    @State private var invertido = false
     private let nombre: String
     private let control: TipoControl
 
@@ -54,6 +55,8 @@ struct VistaMando: View {
             case .boton:
                 BotonUnico(pulsado: $conexion.acelerador)
                     .frame(maxHeight: .infinity)
+            case .giroscopio:
+                EmptyView()
             }
         }
         .padding()
@@ -61,20 +64,37 @@ struct VistaMando: View {
         .persistentSystemOverlays(.hidden)
     }
 
-    /// Horizontal: el giro del teléfono ya controla el volante, así que aquí solo
-    /// hace falta el indicador y los dos botones de gas/freno, uno a cada lado.
+    /// Mando horizontal de marca: los pedales quedan al alcance de los pulgares.
     private var cuerpoGiroscopio: some View {
-        HStack(spacing: 16) {
-            Pedal(titulo: "FRENO", pulsado: $conexion.freno)
-                .frame(width: 100)
+        HStack(spacing: 12) {
+            Pedal(titulo: "FRENO", pulsado: $conexion.freno, acento: .freno)
+                .frame(width: 105)
             VStack(spacing: 10) {
+                HStack {
+                    Text("XPERSIVA / F1").font(.caption.bold()).tracking(1.5).foregroundStyle(Color.cian)
+                    Spacer()
+                }
+                Text("Tú llevas el control.")
+                    .font(.title2.weight(.heavy))
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 cabecera
                 IndicadorGiroscopio(valor: conexion.volante)
+                HStack(spacing: 8) {
+                    Button("◎  Calibrar giro") { giro.calibrar() }
+                    Button(invertido ? "↔  Invertido" : "↔  Invertir") {
+                        invertido.toggle()
+                        giro.invertido = invertido
+                    }
+                }
+                .buttonStyle(.bordered)
+                .tint(.white)
             }
-            Pedal(titulo: "GAS", pulsado: $conexion.acelerador)
-                .frame(width: 100)
+            Pedal(titulo: "ACELERAR", pulsado: $conexion.acelerador, acento: .gas)
+                .frame(width: 105)
         }
-        .padding()
+        .padding(16)
+        .background(Color.noche.ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
         .persistentSystemOverlays(.hidden)
         .statusBarHidden()
@@ -83,7 +103,8 @@ struct VistaMando: View {
     private var cabecera: some View {
         HStack(spacing: 8) {
             Circle().fill(conexion.estado == .dentro ? .ahora : .malo).frame(width: 9, height: 9)
-            Text("\(nombre) · \(textoEstado)").font(.footnote).foregroundStyle(.secondary)
+            Text("\(nombre) · \(textoEstado)").font(.footnote)
+                .foregroundStyle(control == .giroscopio ? Color.white.opacity(0.7) : Color.textoSuave)
             Spacer()
         }
     }
@@ -164,27 +185,47 @@ private struct IndicadorGiroscopio: View {
     let valor: Double
 
     var body: some View {
-        GeometryReader { geo in
-            ZStack {
-                RoundedRectangle(cornerRadius: 16).stroke(.quaternary)
-                Text("inclina el móvil para girar").foregroundStyle(.secondary)
-                Capsule().fill(.tint)
-                    .frame(width: 4)
-                    .padding(.vertical, 10)
-                    .position(x: (valor + 1) / 2 * geo.size.width, y: geo.size.height / 2)
+        VStack(spacing: 5) {
+            Image(systemName: "steeringwheel").font(.title).foregroundStyle(Color.cian)
+            Text("DIRECCIÓN").font(.subheadline.weight(.heavy)).tracking(1.5).foregroundStyle(.white)
+            Text("Gira el móvil como un volante").font(.caption).foregroundStyle(Color.white.opacity(0.7))
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(Color(hex: 0x303657)).frame(height: 7)
+                    Capsule().fill(Color(hex: 0x7980A5)).frame(width: 2, height: 18)
+                        .position(x: geo.size.width / 2, y: geo.size.height / 2)
+                    Circle().fill(Color.cian).frame(width: 24, height: 24)
+                        .position(x: (valor + 1) / 2 * geo.size.width, y: geo.size.height / 2)
+                }
             }
+            .frame(height: 28)
+            HStack {
+                Text("IZQUIERDA")
+                Spacer()
+                Text("DERECHA")
+            }
+            .font(.caption2.bold())
+            .foregroundStyle(Color.white.opacity(0.5))
         }
+        .padding(20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(hex: 0x111630), in: RoundedRectangle(cornerRadius: 24))
+        .overlay(RoundedRectangle(cornerRadius: 24).stroke(Color(hex: 0x353B5D)))
     }
 }
 
 private struct Pedal: View {
     let titulo: String
     @Binding var pulsado: Bool
+    var acento: Color? = nil
 
     var body: some View {
-        RoundedRectangle(cornerRadius: 16)
-            .fill(pulsado ? AnyShapeStyle(.tint) : AnyShapeStyle(.quaternary))
-            .overlay(Text(titulo).font(.headline).foregroundStyle(pulsado ? .white : .primary))
+        RoundedRectangle(cornerRadius: acento == nil ? 16 : 24)
+            .fill(acento.map { $0.opacity(pulsado ? 0.52 : 0.22) } ?? (pulsado ? Color.acento : Color.acentoSuave))
+            .overlay(RoundedRectangle(cornerRadius: acento == nil ? 16 : 24)
+                .stroke(acento ?? Color.clear, lineWidth: 1))
+            .overlay(Text(titulo).font(.headline.weight(.heavy))
+                .foregroundStyle(acento ?? (pulsado ? Color.white : Color.texto)))
             .contentShape(Rectangle())
             .gesture(
                 DragGesture(minimumDistance: 0)

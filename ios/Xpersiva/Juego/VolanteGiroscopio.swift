@@ -9,6 +9,11 @@ import UIKit
 @MainActor
 final class VolanteGiroscopio {
     private let gestor = CMMotionManager()
+    private var ultimoAngulo = 0.0
+    private var centro = 0.0
+    var invertido = false
+
+    func calibrar() { centro = ultimoAngulo }
 
     func iniciar(alCambiar: @escaping (Double) -> Void) {
         guard gestor.isDeviceMotionAvailable else { return }
@@ -22,8 +27,13 @@ final class VolanteGiroscopio {
             let g = datos.gravity
             let orientacion = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.interfaceOrientation
             let angulo = orientacion == .landscapeLeft ? atan2(g.y, g.x) : atan2(-g.y, -g.x)
-            // ±45º = tope del volante.
-            alCambiar(min(1, max(-1, angulo / (.pi / 4))))
+            MainActor.assumeIsolated {
+                self.ultimoAngulo = angulo
+                let diferencia = atan2(sin(angulo - self.centro), cos(angulo - self.centro))
+                let direccion = self.invertido ? -1.0 : 1.0
+                // ±45º = tope del volante.
+                alCambiar(min(1, max(-1, diferencia / (.pi / 4) * direccion)))
+            }
         }
     }
 
