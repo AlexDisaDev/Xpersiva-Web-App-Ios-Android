@@ -3,12 +3,35 @@ package app.xpersiva.player.nucleo
 import java.net.URI
 
 /**
+ * Qué pantalla de control mostrar para una experiencia.
+ *
+ * Lo decide el propio QR (parámetro `c`), no la versión de la app: así cada
+ * evento elige entre las plantillas YA incluidas en la app sin pedir una
+ * actualización. Añadir una plantilla nueva (un tercer valor aquí) sí sigue
+ * necesitando código nuevo y pasar por revisión; elegir entre las que ya
+ * existen, no.
+ */
+enum class TipoControl {
+    /** Volante + pedales (el mando completo de conducción). */
+    VOLANTE,
+    /** Un único botón grande (p. ej. una experiencia de "pulsa para jugar"). */
+    BOTON,
+    ;
+
+    companion object {
+        /** `null` o un valor que no reconocemos cae en VOLANTE por compatibilidad. */
+        fun desdeParametro(valor: String?): TipoControl =
+            entries.firstOrNull { it.name.equals(valor, ignoreCase = true) } ?: VOLANTE
+    }
+}
+
+/**
  * A qué experiencia hay que unirse, sacado de un QR o de un enlace.
  *
  * Formatos aceptados:
- *   https://<web>/j/F1?h=192.168.0.17:8080   (QR recomendado)
- *   xpersiva://j/F1?h=192.168.0.17:8080      (esquema propio)
- *   http://192.168.0.17:8080                 (QR actual del plugin, solo red local)
+ *   https://<web>/j/F1?h=192.168.0.17:8080&c=boton   (QR recomendado; c es opcional)
+ *   xpersiva://j/F1?h=192.168.0.17:8080              (esquema propio)
+ *   http://192.168.0.17:8080                         (QR actual del plugin, solo red local)
  */
 data class EnlaceUnion(
     /** Código de la experiencia. "LAN" si el QR no traía ninguno. */
@@ -17,6 +40,8 @@ data class EnlaceUnion(
     val host: String,
     /** true para wss:// (juego detrás de un túnel con TLS). */
     val seguro: Boolean = false,
+    /** Qué pantalla de control mostrar en esta experiencia. */
+    val control: TipoControl = TipoControl.VOLANTE,
 ) {
     val urlSocket: String get() = "${if (seguro) "wss" else "ws"}://$host"
 
@@ -24,9 +49,14 @@ data class EnlaceUnion(
         private val HOST = Regex("^[A-Za-z0-9.-]+(:\\d{1,5})?$")
         private val CODIGO = Regex("^[A-Za-z0-9][A-Za-z0-9-]{1,31}$")
 
-        fun crear(codigo: String, host: String?, seguro: Boolean = false): EnlaceUnion? {
+        fun crear(
+            codigo: String,
+            host: String?,
+            seguro: Boolean = false,
+            control: TipoControl = TipoControl.VOLANTE,
+        ): EnlaceUnion? {
             if (host == null || !HOST.matches(host) || !CODIGO.matches(codigo)) return null
-            return EnlaceUnion(codigo.uppercase(), host, seguro)
+            return EnlaceUnion(codigo.uppercase(), host, seguro, control)
         }
 
         fun desdeTexto(texto: String): EnlaceUnion? {
@@ -43,7 +73,12 @@ data class EnlaceUnion(
                 val trozos = (listOf(if (esquema == Config.ESQUEMA) uri.host ?: "" else "") +
                     (uri.path ?: "").split("/")).filter { it.isNotEmpty() }
                 if (trozos.size < 2 || trozos[0] != "j") return null
-                return crear(trozos[1], consulta["h"], consulta["s"] == "1")
+                return crear(
+                    trozos[1],
+                    consulta["h"],
+                    consulta["s"] == "1",
+                    TipoControl.desdeParametro(consulta["c"]),
+                )
             }
 
             // QR antiguo del plugin: solo si apunta a la red local.

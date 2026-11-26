@@ -25,6 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.xpersiva.player.juego.ConexionJuego
 import app.xpersiva.player.juego.ConexionJuego.Estado
 import app.xpersiva.player.nucleo.EnlaceUnion
+import app.xpersiva.player.nucleo.TipoControl
 
 /**
  * El mando. Cada zona tiene su propio pointerInput, así que Compose deja usar
@@ -51,10 +52,17 @@ fun PantallaMando(enlace: EnlaceUnion, nombre: String, alSalir: () -> Unit) {
             Text("$nombre · ${textoEstado(estado)}", style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Volante(Modifier.weight(1f)) { conexion.volante = it }
-        Row(Modifier.fillMaxWidth().height(260.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Pedal("FRENO", Modifier.weight(1f)) { conexion.freno = it }
-            Pedal("GAS", Modifier.weight(1f)) { conexion.acelerador = it }
+        when (enlace.control) {
+            TipoControl.VOLANTE -> {
+                Volante(Modifier.weight(1f)) { conexion.volante = it }
+                Row(Modifier.fillMaxWidth().height(260.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Pedal("FRENO", Modifier.weight(1f)) { conexion.freno = it }
+                    Pedal("GAS", Modifier.weight(1f)) { conexion.acelerador = it }
+                }
+            }
+            // Experiencias que solo necesitan "pulsa para jugar": reusa `acelerador`
+            // (el `throttle` del protocolo) como señal de pulsado/soltado.
+            TipoControl.BOTON -> Pedal("PULSA", Modifier.weight(1f)) { conexion.acelerador = it }
         }
         OutlinedButton(onClick = alSalir, modifier = Modifier.fillMaxWidth()) { Text("Salir") }
     }
