@@ -4,9 +4,9 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
-import androidx.core.location.LocationManagerCompat
-import androidx.core.util.Consumer
+import android.os.Looper
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import app.xpersiva.player.nucleo.Config
@@ -69,21 +69,29 @@ class CatalogoViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    /** Una sola lectura de ubicación aproximada. Llamar solo con el permiso concedido. */
+    /**
+     * Una sola lectura de ubicación aproximada. Llamar solo con el permiso concedido.
+     *
+     * Usamos la API clásica de [LocationManager] (no `LocationManagerCompat.getCurrentLocation`):
+     * en este proyecto esa llamada da "overload resolution ambiguity" porque hay dos versiones
+     * de `androidx.core` en el classpath con la misma firma, y evitarla es más simple que
+     * resolver el conflicto de dependencias.
+     */
+    @Suppress("DEPRECATION")
     @SuppressLint("MissingPermission")
     fun localizar() {
         val lm = getApplication<Application>().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val proveedor = if (lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) LocationManager.NETWORK_PROVIDER
         else LocationManager.PASSIVE_PROVIDER
         lm.getLastKnownLocation(proveedor)?.let { _estado.value = _estado.value.copy(aqui = Posicion(it.latitude, it.longitude)) }
-        LocationManagerCompat.getCurrentLocation(
-            lm,
+        lm.requestSingleUpdate(
             proveedor,
-            null,
-            getApplication<Application>().mainExecutor,
-            Consumer<Location> { loc ->
-                if (loc != null) _estado.value = _estado.value.copy(aqui = Posicion(loc.latitude, loc.longitude))
+            object : LocationListener {
+                override fun onLocationChanged(location: Location) {
+                    _estado.value = _estado.value.copy(aqui = Posicion(location.latitude, location.longitude))
+                }
             },
+            Looper.getMainLooper(),
         )
     }
 }
