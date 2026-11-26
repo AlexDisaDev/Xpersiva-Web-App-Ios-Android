@@ -85,8 +85,15 @@ class ConexionJuego(private val enlace: EnlaceUnion, private val nombre: String)
                 if (mensaje.optString("type") == "joined") _estado.value = Estado.DENTRO
             }
 
-            override fun onClosed(webSocket: WebSocket, code: Int, reason: String) = perdida()
-            override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) = perdida()
+            override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+                android.util.Log.w("ConexionJuego", "cerrado por el juego: code=$code reason=$reason")
+                perdida()
+            }
+
+            override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+                android.util.Log.w("ConexionJuego", "fallo de conexión: ${t.message}", t)
+                perdida()
+            }
         })
     }
 
