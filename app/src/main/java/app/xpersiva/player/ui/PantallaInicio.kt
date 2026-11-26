@@ -288,6 +288,9 @@ private fun TarjetaExperiencia(e: Experiencia, distancia: String?, alPulsar: () 
                 }
                 Text(e.nombre, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 Text(e.subtitulo, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+                e.horario?.let {
+                    Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
                 distancia?.let {
                     Spacer(Modifier.height(4.dp))
                     Text(it, style = MaterialTheme.typography.labelLarge, color = Colores.Acento, fontWeight = FontWeight.Bold)

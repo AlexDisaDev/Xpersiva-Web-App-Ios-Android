@@ -77,6 +77,7 @@ fun PantallaExperiencia(id: String, catalogo: CatalogoViewModel, alEscanear: () 
                 Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Dato("Dónde", listOfNotNull(e.lugar, e.ciudad, distancia).joinToString(" · "))
                     if (fechas.isNotEmpty()) Dato("Cuándo", fechas)
+                    e.horario?.let { Dato("Horario", it) }
                 }
             }
             e.descripcion?.let {
