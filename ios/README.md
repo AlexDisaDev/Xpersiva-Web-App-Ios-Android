@@ -34,6 +34,26 @@ juego → app  {"type":"joined","id":"<ClientID>"}
 app → juego  {"type":"input","steer":-1..1,"throttle":0|1,"brake":0|1}
 ```
 
+## Tipo de control por experiencia (sin actualizar la app)
+
+El QR puede llevar un parámetro `c` opcional para elegir qué pantalla de
+mando se muestra, por ejemplo:
+
+```
+https://xpersiva.netlify.app/j/F1?h=192.168.0.17:8080        → volante + pedales (por defecto, si se omite c)
+https://xpersiva.netlify.app/j/F1?h=192.168.0.17:8080&c=boton → un único botón grande
+```
+
+Esto lo decide `Nucleo/EnlaceUnion.swift` (`TipoControl`), no la versión de
+la app: cada evento elige entre las plantillas que YA están en la app sin
+pedir una actualización ni pasar revisión otra vez. Para generar el QR con
+`c=boton` desde el Blueprint de Unreal, basta con añadir `&c=boton` a la
+"Public URL" que se usa al crear el código QR del plugin `websocket`.
+
+Añadir una plantilla de control genuinamente nueva (un tercer caso, no solo
+elegir entre las dos que ya existen) sí sigue necesitando código nuevo en
+`VistaMando.swift` y una nueva versión de la app.
+
 ## Antes de publicar
 
 - Dominio definitivo en `Nucleo/Config.swift` y `Xpersiva.entitlements`.
