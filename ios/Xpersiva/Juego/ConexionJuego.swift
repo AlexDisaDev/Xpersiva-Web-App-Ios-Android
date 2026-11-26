@@ -7,6 +7,11 @@ import Observation
 ///   app → juego  {"type":"hello","name","code"}
 ///   juego → app  {"type":"joined","id"}
 ///   app → juego  {"type":"input","steer","throttle","brake"}  hasta 30 veces por segundo
+///
+/// Reenviamos el último valor cada `intervaloReenvioMs` aunque no cambie: el
+/// juego usa eso como señal de "sigo vivo" para soltar los ejes si el mando
+/// desaparece, y si no lo mandáramos nunca, mantener el volante quieto sería
+/// indistinguible de una desconexión.
 @MainActor
 @Observable
 final class ConexionJuego {
@@ -24,6 +29,9 @@ final class ConexionJuego {
     private var socket: URLSessionWebSocketTask?
     private var tareas: [Task<Void, Never>] = []
     private var ultimoEnviado = ""
+    private var ultimoEnvioMs: ContinuousClock.Instant?
+    private let intervaloReenvio: Duration = .milliseconds(200)
+    private let reloj = ContinuousClock()
 
     init(enlace: EnlaceUnion, nombre: String) {
         self.enlace = enlace
@@ -74,7 +82,6 @@ final class ConexionJuego {
         estado = .dentro
     }
 
-    /// Solo mandamos cuando algo cambió, igual que el mando web.
     private func bucleEnvio() async {
         while !Task.isCancelled {
             try? await Task.sleep(for: .milliseconds(33))
@@ -85,8 +92,11 @@ final class ConexionJuego {
                 "throttle": acelerador ? 1 : 0,
                 "brake": freno ? 1 : 0,
             ])
-            guard carga != ultimoEnviado else { continue }
+            let ahora = reloj.now
+            let tocaReenviar = ultimoEnvioMs.map { ahora - $0 >= intervaloReenvio } ?? true
+            guard carga != ultimoEnviado || tocaReenviar else { continue }
             ultimoEnviado = carga
+            ultimoEnvioMs = ahora
             try? await socket.send(.string(carga))
         }
     }
