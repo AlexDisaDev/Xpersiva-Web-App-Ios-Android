@@ -2,7 +2,7 @@
 
 ## Versión recomendada
 
-La identidad más reciente está en [`v2-portal/`](v2-portal/). Para el inicio de la app, usa [`xpersiva-intro-para-app-suave.mp4`](v2-portal/xpersiva-intro-para-app-suave.mp4): tiene el logo con bordes suavizados, sin puntos decorativos, dos giros y fade de entrada y salida sobre `#090B1E`. El [`icono de app`](v2-portal/xpersiva-portal-app-icon.png) y el [`símbolo vectorial`](v2-portal/xpersiva-portal-symbol.svg) corresponden a esa misma versión. Los archivos de esta carpeta raíz conservan la primera propuesta.
+Los archivos con nombres listos para copiar están en [`app-ready/`](app-ready/). Consulta [`INSTALL_FOR_CLAUDE.md`](INSTALL_FOR_CLAUDE.md) para ver el destino exacto de cada imagen y del vídeo. La identidad más reciente y sus originales están en [`v2-portal/`](v2-portal/). El vídeo definitivo tiene el logo con bordes suavizados, sin puntos decorativos, dos giros y fade de entrada y salida sobre `#090B1E`. Los archivos de esta carpeta raíz conservan la primera propuesta.
 
 La rama `brand` guarda los recursos y los scripts fuente. Las imágenes de revisión generadas durante el render se excluyen con `.gitignore`.
 
