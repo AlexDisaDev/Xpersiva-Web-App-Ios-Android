@@ -1,5 +1,7 @@
 <resources>
+    <!-- Fondo de arranque azul noche: es el color del primer fotograma del vídeo de
+         apertura, así no hay salto entre lo que pinta el sistema y el vídeo. -->
     <style name="Theme.Xpersiva" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowBackground">@color/noche</item>
     </style>
 </resources>

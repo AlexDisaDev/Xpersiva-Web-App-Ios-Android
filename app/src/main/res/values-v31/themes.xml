@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.Xpersiva" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/noche</item>
+        <item name="android:windowSplashScreenBackground">@color/noche</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+    </style>
+</resources>
