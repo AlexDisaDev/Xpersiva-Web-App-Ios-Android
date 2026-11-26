@@ -57,6 +57,7 @@ struct VistaExperiencia: View {
                 VStack(alignment: .leading, spacing: 10) {
                     dato("Dónde", lugar(e))
                     if let fechas = fechas(e) { dato("Cuándo", fechas) }
+                    if let horario = e.horario { dato("Horario", horario) }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(16)

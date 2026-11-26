@@ -13,6 +13,10 @@ struct Experiencia: Codable, Identifiable, Hashable, Sendable {
     let lng: Double
     let startsAt: Date?
     let endsAt: Date?
+    /// Horario del día (hora local, "10:00"), opcional: la campaña
+    /// (`startsAt`/`endsAt`) puede durar meses.
+    let dailyOpensAt: String?
+    let dailyClosesAt: String?
     let description: String?
     let tags: [String]?
 
@@ -22,8 +26,32 @@ struct Experiencia: Codable, Identifiable, Hashable, Sendable {
         [brand, venue, city].compactMap { $0 }.joined(separator: " · ")
     }
 
+    /// "10:00 – 20:00", o nil si no tiene horario diario.
+    var horario: String? {
+        guard dailyOpensAt != nil || dailyClosesAt != nil else { return nil }
+        return [dailyOpensAt, dailyClosesAt].compactMap { $0 }.joined(separator: " – ")
+    }
+
+    /// Dentro de la campaña (`startsAt`/`endsAt`) y, si tiene horario diario,
+    /// dentro de él. Sin horario diario, una campaña larga (como el demo de
+    /// portfolio, que dura más de un año) estaría "en marcha" las 24 horas del día.
     func estaEnMarcha(_ ahora: Date = .now) -> Bool {
-        (startsAt ?? .distantPast) <= ahora && ahora <= (endsAt ?? .distantFuture)
+        guard (startsAt ?? .distantPast) <= ahora, ahora <= (endsAt ?? .distantFuture) else { return false }
+        let minutosAhora = Self.minutosDelDia(ahora)
+        if let apertura = dailyOpensAt, let minutos = Self.minutosDeHora(apertura), minutosAhora < minutos { return false }
+        if let cierre = dailyClosesAt, let minutos = Self.minutosDeHora(cierre), minutosAhora > minutos { return false }
+        return true
+    }
+
+    private static func minutosDelDia(_ fecha: Date) -> Int {
+        let c = Calendar.current.dateComponents([.hour, .minute], from: fecha)
+        return (c.hour ?? 0) * 60 + (c.minute ?? 0)
+    }
+
+    private static func minutosDeHora(_ texto: String) -> Int? {
+        let partes = texto.split(separator: ":")
+        guard partes.count == 2, let h = Int(partes[0]), let m = Int(partes[1]) else { return nil }
+        return h * 60 + m
     }
 
     func haTerminado(_ ahora: Date = .now) -> Bool {
