@@ -6,6 +6,8 @@ Los archivos con nombres listos para copiar están en [`app-ready/`](app-ready/)
 
 La rama `brand` guarda los recursos y los scripts fuente. Las imágenes de revisión generadas durante el render se excluyen con `.gitignore`.
 
+El diseño conceptual del mando con giroscopio está en [`controller-f1/`](controller-f1/). Es una propuesta visual; no modifica la app.
+
 Basada en la documentación del repositorio [Xpersiva-Web-App-Ios-Android](https://github.com/AlexDisaDev/Xpersiva-Web-App-Ios-Android): experiencias inmersivas en eventos donde el usuario escanea un QR y usa el móvil como mando. Mantiene el violeta `#6D4AFF` que ya usa la aplicación. El símbolo reúne cuatro piezas en una X y deja un pequeño espacio central como referencia a la entrada a una experiencia.
 
 ## Archivos
