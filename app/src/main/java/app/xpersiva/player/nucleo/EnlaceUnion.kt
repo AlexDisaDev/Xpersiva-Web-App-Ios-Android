@@ -16,6 +16,8 @@ enum class TipoControl {
     VOLANTE,
     /** Un único botón grande (p. ej. una experiencia de "pulsa para jugar"). */
     BOTON,
+    /** Volante por giroscopio: se gira el propio teléfono en horizontal. */
+    GIROSCOPIO,
     ;
 
     companion object {

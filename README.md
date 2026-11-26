@@ -39,18 +39,28 @@ El QR puede llevar un parámetro `c` opcional para elegir qué pantalla de
 mando se muestra, por ejemplo:
 
 ```
-https://xpersiva.netlify.app/j/F1?h=192.168.0.17:8080        → volante + pedales (por defecto, si se omite c)
-https://xpersiva.netlify.app/j/F1?h=192.168.0.17:8080&c=boton → un único botón grande
+https://xpersiva.netlify.app/j/F1?h=192.168.0.17:8080               → volante + pedales (por defecto, si se omite c)
+https://xpersiva.netlify.app/j/F1?h=192.168.0.17:8080&c=boton       → un único botón grande
+https://xpersiva.netlify.app/j/F1?h=192.168.0.17:8080&c=giroscopio  → volante por giroscopio (pantalla horizontal)
 ```
 
 Esto lo decide `nucleo/EnlaceUnion.kt` (`TipoControl`), no la versión de la
 app: cada evento elige entre las plantillas que YA están en la app sin
 pedir una actualización ni pasar revisión otra vez. Para generar el QR con
-`c=boton` desde el Blueprint de Unreal, basta con añadir `&c=boton` a la
-"Public URL" que se usa al crear el código QR del plugin `websocket`.
+`c=boton`/`c=giroscopio` desde el Blueprint de Unreal, basta con añadir ese
+parámetro a la "Public URL" que se usa al crear el código QR del plugin
+`websocket`.
 
-Añadir una plantilla de control genuinamente nueva (un tercer caso, no solo
-elegir entre las dos que ya existen) sí sigue necesitando código nuevo en
+**`c=giroscopio`:** `juego/VolanteGiroscopio.kt` usa el sensor
+`TYPE_ROTATION_VECTOR` y toma la postura del teléfono al entrar como
+"centro", así da igual cómo lo sujete cada uno. `PantallaMando.kt` pone
+`requestedOrientation = SCREEN_ORIENTATION_SENSOR_LANDSCAPE` solo mientras
+esa pantalla está abierta (la actividad declara `configChanges` para no
+recrearse al girar) y deja gas/freno como dos botones táctiles, uno a cada
+lado.
+
+Añadir una plantilla de control genuinamente nueva (un cuarto caso, no solo
+elegir entre las que ya existen) sí sigue necesitando código nuevo en
 `PantallaMando.kt` y una nueva versión de la app.
 
 ## Antes de publicar
