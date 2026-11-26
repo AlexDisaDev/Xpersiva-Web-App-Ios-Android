@@ -208,6 +208,9 @@ struct TarjetaExperiencia: View {
                 }
                 Text(experiencia.name).font(.headline).foregroundStyle(Color.texto)
                 Text(experiencia.subtitulo).font(.subheadline).foregroundStyle(Color.textoSuave).lineLimit(1)
+                if let horario = experiencia.horario {
+                    Text(horario).font(.caption).foregroundStyle(Color.textoSuave)
+                }
                 if let distancia {
                     Text(distancia).font(.subheadline.bold()).foregroundStyle(Color.acento).padding(.top, 2)
                 }
