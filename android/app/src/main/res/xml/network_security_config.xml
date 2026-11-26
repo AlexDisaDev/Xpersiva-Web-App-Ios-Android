@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- El juego del evento habla ws:// sin TLS en la red local (plugin websocket).
+     Android bloquea el tráfico sin cifrar por defecto, así que lo permitimos.
+     La IP del PC cambia en cada evento, por eso no se puede limitar a un dominio. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>
