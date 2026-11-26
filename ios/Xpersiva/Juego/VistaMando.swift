@@ -82,7 +82,7 @@ struct VistaMando: View {
 
     private var cabecera: some View {
         HStack(spacing: 8) {
-            Circle().fill(conexion.estado == .dentro ? .green : .red).frame(width: 9, height: 9)
+            Circle().fill(conexion.estado == .dentro ? .ahora : .malo).frame(width: 9, height: 9)
             Text("\(nombre) · \(textoEstado)").font(.footnote).foregroundStyle(.secondary)
             Spacer()
         }

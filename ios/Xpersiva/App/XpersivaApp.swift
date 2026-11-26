@@ -36,7 +36,7 @@ struct VistaRaiz: View {
         }
         .environment(catalogo)
         .environment(ubicacion)
-        .tint(.indigo)
+        .tint(.acento)
         // Enlaces del QR (https://<web>/j/…) y de la web (/e/<id>) con la app instalada.
         .onOpenURL(perform: abrir)
     }

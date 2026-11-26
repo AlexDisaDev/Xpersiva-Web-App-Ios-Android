@@ -22,7 +22,7 @@ Pon tu Team ID en `DEVELOPMENT_TEAM` de `project.yml` (o en Xcode → Signing).
 
 - `App/`: arranque, navegación, enlaces entrantes (`onOpenURL`) y el bloqueo de
   orientación (`OrientacionApp.swift`) que usa el mando por giroscopio.
-- `Nucleo/`: configuración, lectura de enlaces del QR, nombre del jugador.
+- `Nucleo/`: configuración, lectura de enlaces del QR, nombre del jugador, colores de marca (`Marca.swift`).
 - `Experiencias/`: catálogo desde la web, ubicación (solo al pulsar), inicio con buscador y ficha.
 - `Escaner/`: cámara + lectura de QR (AVFoundation), con explicación antes del permiso.
 - `Juego/`: entrada con nombre, conexión WebSocket con el plugin del juego y mando multitáctil.
@@ -63,8 +63,22 @@ Añadir una plantilla de control genuinamente nueva (un cuarto caso, no solo
 elegir entre las que ya existen) sí sigue necesitando código nuevo en
 `VistaMando.swift` y una nueva versión de la app.
 
+## Marca
+
+Colores en `Nucleo/Marca.swift` (acento morado, verde de "conectado", rojo de
+error), iguales a los de `Colores.kt` en `android/v1`. El tint global de la
+app (`.tint(.acento)` en `XpersivaApp.swift`) y `AccentColor` en
+`Assets.xcassets` usan el mismo morado `#6D4AFF`.
+
+El icono (`Assets.xcassets/AppIcon`) sale del isotipo que ya tenía la primera
+versión Expo del proyecto (`assets/icon.png`), recortado y puesto sobre el
+morado de marca en vez del fondo con las guías de diseño que traía ese PNG.
+Los otros assets de esa carpeta (`splash-icon.png`, `android-icon-background.png`)
+tienen esas mismas guías de cuadrícula incrustadas en el propio PNG, no
+sirven como están: si quieres usarlos, pide un reexport limpio.
+
 ## Antes de publicar
 
 - Dominio definitivo en `Nucleo/Config.swift` y `Xpersiva.entitlements`.
 - Team ID en `web/.well-known/apple-app-site-association` (rama `web/v1`).
-- Icono (Assets.xcassets → AppIcon) y capturas.
+- Icono ya aplicado (ver "Marca" arriba); capturas de pantalla pendientes.
