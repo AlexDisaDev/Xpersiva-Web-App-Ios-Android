@@ -1,0 +1,10 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["TEAMID.app.xpersiva.player"],
+        "components": [{ "/": "/j/*" }, { "/": "/e/*" }]
+      }
+    ]
+  }
+}

@@ -1,0 +1,3 @@
+# Netlify publica solo la web; la app se compila con EAS.
+[build]
+  publish = "web"
