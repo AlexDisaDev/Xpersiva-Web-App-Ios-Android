@@ -3,6 +3,7 @@ package app.xpersiva.player.experiencias
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import android.location.Location
 import android.location.LocationManager
 import androidx.core.location.LocationManagerCompat
 import androidx.core.util.Consumer
@@ -80,7 +81,7 @@ class CatalogoViewModel(app: Application) : AndroidViewModel(app) {
             proveedor,
             null,
             getApplication<Application>().mainExecutor,
-            Consumer { loc ->
+            Consumer<Location> { loc ->
                 if (loc != null) _estado.value = _estado.value.copy(aqui = Posicion(loc.latitude, loc.longitude))
             },
         )
