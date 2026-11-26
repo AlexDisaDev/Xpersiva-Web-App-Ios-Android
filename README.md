@@ -66,16 +66,21 @@ elegir entre las que ya existen) sí sigue necesitando código nuevo en
 
 ## Marca
 
-Colores en `ui/Tema.kt` (`Colores.Acento`, `.Ahora`, `.Malo`), iguales a los
-de `Nucleo/Marca.swift` en `ios/v1`.
+Sale de la rama `brand` (`brand/app-ready/`, los definitivos; `brand/v2-portal/`
+solo se usó como referencia visual):
 
-El icono (`res/mipmap-anydpi-v26/ic_launcher.xml`, adaptive icon) sale del
-isotipo que ya tenía la primera versión Expo del proyecto
-(`assets/android-icon-foreground.png`), que ya traía buen margen para la
-máscara adaptable; el fondo es el morado de marca en vez del fondo con las
-guías de diseño que traía `android-icon-background.png`. Ese PNG y
-`splash-icon.png` tienen esas guías de cuadrícula incrustadas en el propio
-archivo, no sirven como están: si quieres usarlos, pide un reexport limpio.
+- Colores en `ui/Tema.kt` (`Colores`): violeta `#6D4AFF`, cian `#42E3F2`, azul
+  noche `#090B1E` y superficies claras. Los mismos en `Nucleo/Marca.swift` (`ios/v1`).
+- Icono adaptable (`res/mipmap-anydpi-v26/`): fondo azul noche, símbolo de
+  `android-icon-foreground.png` y capa monocroma para los iconos temáticos de Android 13+.
+- Arranque: la ventana y la splash del sistema (Android 12+, `values-v31/themes.xml`)
+  son azul noche, igual que el primer fotograma de `res/raw/startup_intro.mp4`.
+  `ui/IntroApertura.kt` reproduce ese vídeo una vez por arranque (sin sonido,
+  tocar lo salta) y luego enseña la app. Con "Quitar animaciones" activado en
+  Accesibilidad sale solo el símbolo un momento. Un enlace del QR que abre la app
+  espera a que acabe la intro y aterriza en su pantalla como siempre.
+- Logo de cabecera: `res/drawable-nodpi/logo_cabecera.png` (recorte de
+  `logo-header.png`, para fondo claro).
 
 ## Antes de publicar
 
