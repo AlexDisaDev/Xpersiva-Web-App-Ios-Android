@@ -8,10 +8,12 @@ import Foundation
 /// necesitando código nuevo y pasar por revisión; elegir entre las que ya
 /// existen, no.
 enum TipoControl: String, Hashable, Sendable {
-    /// Volante + pedales (el mando completo de conducción).
+    /// Volante + pedales en pantalla (el mando completo de conducción).
     case volante
     /// Un único botón grande (p. ej. una experiencia de "pulsa para jugar").
     case boton
+    /// Volante por giroscopio: se gira el propio teléfono en horizontal.
+    case giroscopio
 
     /// `nil` o un valor que no reconocemos cae en `.volante` por compatibilidad.
     init(parametro: String?) {

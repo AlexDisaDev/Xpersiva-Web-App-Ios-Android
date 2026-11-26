@@ -27,7 +27,13 @@ targets:
       properties:
         CFBundleDisplayName: Xpersiva
         UILaunchScreen: {}
-        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        # Portrait en toda la app; el mando por giroscopio pide horizontal solo en su
+        # pantalla (ver OrientacionApp.swift), pero necesita que el sistema lo tenga
+        # declarado aquí o no gira aunque el delegate lo permita.
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
         NSCameraUsageDescription: Xpersiva usa la cámara solo para escanear el código QR de la experiencia.
         NSLocationWhenInUseUsageDescription: Xpersiva usa tu ubicación solo para enseñarte primero las experiencias que tienes más cerca.
         NSLocalNetworkUsageDescription: Xpersiva se conecta a la experiencia del evento a través de la red Wi-Fi local.

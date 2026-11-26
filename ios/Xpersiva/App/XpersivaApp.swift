@@ -2,6 +2,8 @@ import SwiftUI
 
 @main
 struct XpersivaApp: App {
+    @UIApplicationDelegateAdaptor(OrientacionApp.self) private var orientacionApp
+
     var body: some Scene {
         WindowGroup {
             VistaRaiz()
