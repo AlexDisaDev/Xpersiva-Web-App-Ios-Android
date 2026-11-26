@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.Context
 import android.location.LocationManager
 import androidx.core.location.LocationManagerCompat
+import androidx.core.util.Consumer
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import app.xpersiva.player.nucleo.Config
@@ -74,8 +75,14 @@ class CatalogoViewModel(app: Application) : AndroidViewModel(app) {
         val proveedor = if (lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) LocationManager.NETWORK_PROVIDER
         else LocationManager.PASSIVE_PROVIDER
         lm.getLastKnownLocation(proveedor)?.let { _estado.value = _estado.value.copy(aqui = Posicion(it.latitude, it.longitude)) }
-        LocationManagerCompat.getCurrentLocation(lm, proveedor, null, getApplication<Application>().mainExecutor) { loc ->
-            if (loc != null) _estado.value = _estado.value.copy(aqui = Posicion(loc.latitude, loc.longitude))
-        }
+        LocationManagerCompat.getCurrentLocation(
+            lm,
+            proveedor,
+            null,
+            getApplication<Application>().mainExecutor,
+            Consumer { loc ->
+                if (loc != null) _estado.value = _estado.value.copy(aqui = Posicion(loc.latitude, loc.longitude))
+            },
+        )
     }
 }
